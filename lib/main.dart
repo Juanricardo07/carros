@@ -89,11 +89,11 @@ class MyHomePageState extends State<MyHomePage> {
     super.initState();
     _bloc = Provider.of<Mybloc>(context, listen: false);
 
-    if (!_bloc.isDataStreamListening) {
+    /*  if (!_bloc.isDataStreamListening) {
       _bloc.mapEventToState(FetchDataEvent());
       _bloc.mapEventToState(CargarGastosEvent());
       _bloc.setIsDataStreamListening(true);
-    }
+    }*/
 
     widget.baseDeDatos.getDataStream().listen((dataList) {
       marcasList = dataList.map((data) => data['MARCA'].toString()).toList();
@@ -113,10 +113,13 @@ class MyHomePageState extends State<MyHomePage> {
     required String modelo,
     required String anio,
   }) {
-    _matriculaController.text = matricula;
-    _marcaController.text = marca;
-    _modeloController.text = modelo;
-    _anioController.text = anio;
+    String matriculaOriginal = matricula;
+    TextEditingController matriculaController =
+        TextEditingController(text: matricula);
+    TextEditingController marcaController = TextEditingController(text: marca);
+    TextEditingController modeloController =
+        TextEditingController(text: modelo);
+    TextEditingController anioController = TextEditingController(text: anio);
 
     showDialog(
       context: context,
@@ -127,7 +130,7 @@ class MyHomePageState extends State<MyHomePage> {
             child: Column(
               children: [
                 TextField(
-                  controller: _matriculaController,
+                  controller: matriculaController,
                   keyboardType: TextInputType.text,
                   maxLength: 7,
                   decoration: const InputDecoration(
@@ -135,7 +138,7 @@ class MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 TextField(
-                  controller: _marcaController,
+                  controller: marcaController,
                   keyboardType: TextInputType.text,
                   maxLength: 20,
                   inputFormatters: <TextInputFormatter>[
@@ -147,7 +150,7 @@ class MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 TextField(
-                  controller: _modeloController,
+                  controller: modeloController,
                   keyboardType: TextInputType.text,
                   maxLength: 20,
                   inputFormatters: <TextInputFormatter>[
@@ -159,7 +162,7 @@ class MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 TextField(
-                  controller: _anioController,
+                  controller: anioController,
                   keyboardType: TextInputType.number,
                   maxLength: 4,
                   inputFormatters: <TextInputFormatter>[
@@ -175,24 +178,25 @@ class MyHomePageState extends State<MyHomePage> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                if (_matriculaController.text.isEmpty ||
-                    _marcaController.text.isEmpty ||
-                    _modeloController.text.isEmpty ||
-                    _anioController.text.isEmpty) {
+                if (matriculaController.text.isEmpty ||
+                    marcaController.text.isEmpty ||
+                    modeloController.text.isEmpty ||
+                    anioController.text.isEmpty) {
                   showCamposVaciosAlert();
-                } else if (matriculasList.contains(_matriculaController.text) &&
-                    _matriculaController.text != selectedMatricula) {
+                } else if (matriculasList.contains(matriculaController.text) &&
+                    matriculaController.text != matriculaOriginal) {
                   showMatriculaExistenteAlert();
                 } else {
                   _bloc.mapEventToState(
                     EditarCarroEvent(
-                      matriculaOriginal: selectedMatricula!,
-                      nuevaMatricula: _matriculaController.text,
-                      nuevaMarca: _marcaController.text,
-                      nuevoModelo: _modeloController.text,
-                      nuevoAnio: _anioController.text,
+                      matriculaOriginal: matriculaOriginal,
+                      nuevaMatricula: matriculaController.text,
+                      nuevaMarca: marcaController.text,
+                      nuevoModelo: modeloController.text,
+                      nuevoAnio: anioController.text,
                     ),
                   );
+
                   Navigator.pop(context);
                 }
               },
@@ -358,7 +362,7 @@ class MyHomePageState extends State<MyHomePage> {
               child: const Text('Agregar Carro'),
             ),
             const SizedBox(height: 16),
-            StreamBuilder<List<Map<String, dynamic>>>(
+            /* StreamBuilder<List<Map<String, dynamic>>>(
               stream: widget.baseDeDatos.getDataStream(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -381,7 +385,7 @@ class MyHomePageState extends State<MyHomePage> {
                   return const Text('Cargando datos...');
                 }
               },
-            ),
+            ),*/
           ],
         ),
       ),

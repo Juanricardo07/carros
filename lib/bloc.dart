@@ -226,8 +226,8 @@ class Mybloc with ChangeNotifier {
         event.nuevoModelo,
         nuevoAnio,
       );
-      _currentState = DatosCargados();
       notifyListeners();
+      _currentState = DatosCargados();
     } else if (event is AgregarCategoriaEvent) {
       List<Map<String, dynamic>> categoriasMapList =
           await _dataRepository.getDataCategoria();

@@ -30,6 +30,7 @@ class _GastosPantallaState extends State<GastosPantalla> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: GlobalKey<ScaffoldState>(),
       appBar: AppBar(
         title: const Text('Categorias'),
         backgroundColor: Colors.deepOrange,
@@ -121,6 +122,7 @@ class _GastosPantallaState extends State<GastosPantalla> {
                   const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () async {
+                      var mibloc = context.read<Mybloc>();
                       await _cargarCategorias();
                       if (categoriaController.text.isEmpty) {
                         showCamposVaciosAlert();
@@ -128,9 +130,9 @@ class _GastosPantallaState extends State<GastosPantalla> {
                           .categoriaExiste(categoriaController.text)) {
                         showCategoriaExistenteAlert();
                       } else {
-                        context.read<Mybloc>().mapEventToState(
-                              AgregarCategoriaEvent(categoriaController.text),
-                            );
+                        mibloc.mapEventToState(
+                          AgregarCategoriaEvent(categoriaController.text),
+                        );
                         Navigator.pop(context);
                       }
                     },
@@ -155,6 +157,26 @@ class _GastosPantallaState extends State<GastosPantalla> {
         return AlertDialog(
           title: const Text('Categoría Existente'),
           content: const Text('La categoría ya existe.'),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _mostrarErrorDialog(BuildContext context, String mensaje) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(mensaje),
           actions: [
             ElevatedButton(
               onPressed: () {
@@ -220,12 +242,20 @@ class _GastosPantallaState extends State<GastosPantalla> {
               ),
             ),
             TextButton(
-              onPressed: () {
-                final nuevoNombreCategoria = editController.text;
-                context.read<Mybloc>().mapEventToState(EditarCategoriaEvent(
-                      categoriaOriginal: categoria,
-                      nuevoNombreCategoria: nuevoNombreCategoria,
-                    ));
+              onPressed: () async {
+                var miblocc = context.read<Mybloc>();
+                if (editController.text.isEmpty) {
+                  _mostrarErrorDialog(context, 'El campo no puede estar vacío');
+                } else if (await widget.baseDeDatos
+                    .categoriaExiste(editController.text)) {
+                  _mostrarErrorDialog(context, 'La categoría ya existe');
+                } else {
+                  final nuevoNombreCategoria = editController.text;
+                  miblocc.mapEventToState(EditarCategoriaEvent(
+                    categoriaOriginal: categoria,
+                    nuevoNombreCategoria: nuevoNombreCategoria,
+                  ));
+                }
                 Navigator.of(context).pop();
               },
               child: const Text(
