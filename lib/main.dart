@@ -8,6 +8,7 @@ import 'categoriaspantalla.dart';
 import 'consultapantalla.dart';
 
 void main() async {
+  /*Version 1.21.2 del proyecto final ;)*/
   WidgetsFlutterBinding.ensureInitialized();
 
   BaseDeDatos basededatos = BaseDeDatos();
