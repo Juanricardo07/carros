@@ -35,6 +35,11 @@ class ConsultasPantallaState extends State<ConsultasPantalla> {
     _cargarGastos();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
   Future<void> _cargarGastos() async {
     await context.read<Mybloc>().mapEventToState(CargarGastosEvent());
   }
@@ -44,11 +49,13 @@ class ConsultasPantallaState extends State<ConsultasPantalla> {
     await myBloc.mapEventToState(CargarCategoriasEvent());
 
     myBloc.categoriasStream.listen((categoriasList) {
-      setState(() {
-        categorias = categoriasList;
-        selectedCategoria =
-            categoriasList.isNotEmpty ? categoriasList.first : '';
-      });
+      if (mounted) {
+        setState(() {
+          categorias = categoriasList;
+          selectedCategoria =
+              categoriasList.isNotEmpty ? categoriasList.first : '';
+        });
+      }
     });
   }
 
@@ -57,11 +64,13 @@ class ConsultasPantallaState extends State<ConsultasPantalla> {
     await myBloc.mapEventToState(CargarMatriculasEvent());
 
     myBloc.matriculasStream.listen((matriculasList) {
-      setState(() {
-        matriculas = matriculasList;
-        selectedMatricula =
-            matriculasList.isNotEmpty ? matriculasList.first : '';
-      });
+      if (mounted) {
+        setState(() {
+          matriculas = matriculasList;
+          selectedMatricula =
+              matriculasList.isNotEmpty ? matriculasList.first : '';
+        });
+      }
     });
   }
 
@@ -381,8 +390,13 @@ class ConsultasPantallaState extends State<ConsultasPantalla> {
   void _eliminarGasto(BuildContext context, Map<String, dynamic> gasto) {
     context.read<Mybloc>().mapEventToState(EliminarGastoEvent(gasto));
 
-    _cargarMatriculas();
-    _cargarCategorias();
+    if (mounted) {
+      setState(() {
+        _cargarGastos();
+        _cargarCategorias();
+        _cargarMatriculas();
+      });
+    }
   }
 
   void _editarGasto(BuildContext context, Map<String, dynamic> gasto) {

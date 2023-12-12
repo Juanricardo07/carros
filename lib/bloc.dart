@@ -326,11 +326,11 @@ class Mybloc with ChangeNotifier {
     notifyListeners();
   }
 
-  @override
+  /* @override
   void dispose() {
     _categoriasController.close();
     _matriculasController.close();
     _gastosController.close();
     super.dispose();
-  }
+  }*/
 }

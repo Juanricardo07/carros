@@ -12,11 +12,10 @@ class GastosPantalla extends StatefulWidget {
     required this.baseDeDatos,
   }) : super(key: key);
   @override
-  // ignore: library_private_types_in_public_api
-  _GastosPantallaState createState() => _GastosPantallaState();
+  GastosPantallaState createState() => GastosPantallaState();
 }
 
-class _GastosPantallaState extends State<GastosPantalla> {
+class GastosPantallaState extends State<GastosPantalla> {
   @override
   void initState() {
     super.initState();
@@ -170,23 +169,24 @@ class _GastosPantallaState extends State<GastosPantalla> {
     );
   }
 
-  void _mostrarErrorDialog(BuildContext context, String mensaje) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Error'),
-          content: Text(mensaje),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Aceptar'),
+  void mostrarErrorSnackBar(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.red,
+        content: Row(
+          children: [
+            const Icon(
+              Icons.warning,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              mensaje,
+              style: const TextStyle(color: Colors.white),
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -245,10 +245,10 @@ class _GastosPantallaState extends State<GastosPantalla> {
               onPressed: () async {
                 var miblocc = context.read<Mybloc>();
                 if (editController.text.isEmpty) {
-                  _mostrarErrorDialog(context, 'El campo no puede estar vacío');
+                  mostrarErrorSnackBar("No se permite el campo vacio");
                 } else if (await widget.baseDeDatos
                     .categoriaExiste(editController.text)) {
-                  _mostrarErrorDialog(context, 'La categoría ya existe');
+                  mostrarErrorSnackBar("La categoria ya existe");
                 } else {
                   final nuevoNombreCategoria = editController.text;
                   miblocc.mapEventToState(EditarCategoriaEvent(
